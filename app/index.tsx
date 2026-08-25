@@ -3,6 +3,8 @@ import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { Link } from "expo-router";
+
 /**
  * Paleta de cores que será usado no projeto por completo
  * Deve ser usado em todas as telas.
@@ -37,7 +39,18 @@ export default function HomeScreen() {
         Ao continuar, você concorda com os Termos e a Política de Privacidade
         (LGPD).
       </Text>
-      <Text style={styles.mapaSemLogin}>Ver mapa sem login {">"}</Text>
+      <Link
+        //href="/mapa"
+        href={{
+          pathname: "/mapa",
+          params: { logado: "true" },
+        }}
+        asChild
+      >
+        <TouchableOpacity activeOpacity={0.8}>
+          <Text style={styles.mapaSemLogin}>Ver mapa sem login {">"}</Text>
+        </TouchableOpacity>
+      </Link>
     </SafeAreaView>
   );
 }
@@ -103,7 +116,7 @@ const styles = StyleSheet.create({
     fontWeight: 800,
   },
   mapaSemLogin: {
-    fontSize: 12,
+    fontSize: 16,
     fontWeight: "700",
     color: cores.verde,
     marginTop: 10,
