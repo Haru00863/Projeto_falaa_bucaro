@@ -29,21 +29,28 @@ export default function HomeScreen() {
         Reporte, acompanhe e confirme a correção de buracos na sua cidade.
       </Text>
 
-      <TouchableOpacity activeOpacity={0.8} style={styles.botao}>
-        <View style={styles.googleIconCircle}>
-          <GoogleLogo size={20} />
-        </View>
-        <Text style={styles.textoBotao}>Entrar com o Google</Text>
-      </TouchableOpacity>
+      <Link
+        href={{
+          pathname: "/mapa",
+          params: { logado: "true" },
+        }}
+        asChild
+      >
+        <TouchableOpacity activeOpacity={0.8} style={styles.botao}>
+          <View style={styles.googleIconCircle}>
+            <GoogleLogo size={20} />
+          </View>
+          <Text style={styles.textoBotao}>Entrar com o Google</Text>
+        </TouchableOpacity>
+      </Link>
       <Text style={styles.rodape}>
         Ao continuar, você concorda com os Termos e a Política de Privacidade
         (LGPD).
       </Text>
       <Link
-        //href="/mapa"
         href={{
           pathname: "/mapa",
-          params: { logado: "true" },
+          params: { logado: "false" },
         }}
         asChild
       >
