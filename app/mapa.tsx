@@ -26,17 +26,17 @@ export default function Mapa() {
       </View>
 
       <View style={styles.navPills}>
-        <Link href="/perfil" asChild>
+        <Link href={{ pathname: "/perfil", params: { logado: estaLogado ? "true" : "false" } }} asChild>
           <TouchableOpacity style={styles.navPill}>
             <Text style={styles.navPillTexto}>Perfil</Text>
           </TouchableOpacity>
         </Link>
-        <Link href="/prefeitura" asChild>
+        <Link href={{ pathname: "/prefeitura", params: { logado: estaLogado ? "true" : "false" } }} asChild>
           <TouchableOpacity style={styles.navPill}>
             <Text style={styles.navPillTexto}>Prefeitura</Text>
           </TouchableOpacity>
         </Link>
-        <Link href="/detalhe" asChild>
+        <Link href={{ pathname: "/detalhe", params: { logado: estaLogado ? "true" : "false" } }} asChild>
           <TouchableOpacity style={styles.navPill}>
             <Text style={styles.navPillTexto}>Detalhe do report</Text>
           </TouchableOpacity>
@@ -64,7 +64,7 @@ export default function Mapa() {
       </View>
 
       {estaLogado && (
-        <Link href="/criacao_reporte" asChild>
+        <Link href={{ pathname: "/criacao_reporte", params: { logado: estaLogado ? "true" : "false" } }} asChild>
           <TouchableOpacity activeOpacity={0.85} style={styles.botaoFlutuante}>
             <Text style={styles.botaoFlutuanteTexto}>+ Reportar buraco</Text>
           </TouchableOpacity>
