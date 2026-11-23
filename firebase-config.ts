@@ -2,7 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getApp, getApps, initializeApp } from "firebase/app";
 // @ts-ignore - tipos do firebase/auth não expõem getReactNativePersistence p/ RN, mas existe em runtime no build nativo (iOS/Android)
 import { getAuth, getReactNativePersistence, initializeAuth } from "firebase/auth";
-import { getFirestore, initializeFirestore, setLogLevel } from "firebase/firestore";
+import { getFirestore, initializeFirestore} from "firebase/firestore";
 import { Platform } from "react-native";
 
 const firebaseConfig = {
@@ -42,5 +42,3 @@ function criarBancoDeDados() {
 
 export const bancoDeDados = criarBancoDeDados();
 
-// TEMPORÁRIO: mostra no terminal o que o Firestore está fazendo. Remova depois.
-setLogLevel("debug");

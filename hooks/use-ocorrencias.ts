@@ -27,7 +27,6 @@ export function useOcorrencias(coordenadas: Coordenadas | null) {
       setCarregando(true);
       buscarOcorrencias(coordenadas)
         .then((lista) => ativo && setOcorrencias(lista))
-        .catch((erro) => console.warn("Falha ao buscar ocorrências", erro)) // TEMPORÁRIO
         .finally(() => ativo && setCarregando(false));
       // Função de limpeza: roda quando a tela perde o foco (ou as coordenadas mudam).
       return () => {
