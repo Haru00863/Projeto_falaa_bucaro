@@ -1,10 +1,21 @@
+import { LISTA_DE_TIPOS, TIPOS } from "@/constants/tipos";
 import { useAuth } from "@/hooks/use-auth";
 import { useCidade } from "@/hooks/use-cidade";
+import { buscarEndereco } from "@/services/endereco";
 import { criarReporte } from "@/services/reportes";
 import { cores } from "@/styles";
+import { TipoOcorrencia } from "@/types/ocorrencia";
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { Alert, StyleSheet, Text, TextInput, TouchableOpacity } from "react-native";
+import {
+  ActivityIndicator,
+  Alert,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function NovoReporte() {
@@ -15,6 +26,7 @@ export default function NovoReporte() {
   // Estado dos campos do formulário e do envio.
   const [titulo, setTitulo] = useState("");
   const [descricao, setDescricao] = useState("");
+  const [tipo, setTipo] = useState<TipoOcorrencia>("buraco"); // "buraco" já vem selecionado
   const [enviando, setEnviando] = useState(false);
 
   async function enviar() {
@@ -33,14 +45,20 @@ export default function NovoReporte() {
       return;
     }
 
-    setEnviando(true); // desabilita o botão para evitar envio duplicado
+    setEnviando(true); // desabilita o botão para evitar envio duplicado e mostra o indicador
     try {
+      // O endereço é um complemento: se não for possível descobri-lo (sem internet,
+      // serviço lento), `buscarEndereco` devolve null e o reporte é enviado mesmo assim.
+      const endereco = await buscarEndereco(coordenadas);
+
       await criarReporte({
         idNotificante: usuario.uid,
         titulo,
         descricao,
         latitude: coordenadas.latitude,
         longitude: coordenadas.longitude,
+        tipo,
+        endereco,
       });
       // Só volta para o mapa quando o usuário confirma o alerta.
       Alert.alert("Reporte enviado", "Obrigado por ajudar a cidade!", [
@@ -75,11 +93,39 @@ export default function NovoReporte() {
         multiline
       />
 
-      <TouchableOpacity style={estilos.botao} onPress={enviar} disabled={enviando}>
+      {/* Escolha do tipo por botões: o botão do tipo escolhido fica verde. */}
+      <Text style={estilos.rotulo}>Tipo do problema</Text>
+      <View style={estilos.tipos}>
+        {LISTA_DE_TIPOS.map((opcao) => {
+          const selecionado = opcao === tipo;
+          return (
+            <TouchableOpacity
+              key={opcao}
+              style={[estilos.botaoTipo, selecionado && estilos.botaoTipoSelecionado]}
+              onPress={() => setTipo(opcao)}
+              disabled={enviando}
+              accessibilityRole="button"
+              accessibilityState={{ selected: selecionado }}
+            >
+              <Text style={[estilos.textoDoTipo, selecionado && estilos.textoDoTipoSelecionado]}>
+                {TIPOS[opcao].rotulo}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
+      </View>
+
+      <TouchableOpacity
+        style={[estilos.botao, enviando && estilos.botaoDesabilitado]}
+        onPress={enviar}
+        disabled={enviando}
+      >
+        {/* Enquanto envia, mostra um indicador de carregamento ao lado do texto. */}
+        {enviando && <ActivityIndicator color={cores.branco} />}
         <Text style={estilos.textoDoBotao}>{enviando ? "Enviando..." : "Enviar reporte"}</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => roteador.back()}>
+      <TouchableOpacity onPress={() => roteador.back()} disabled={enviando}>
         <Text style={estilos.cancelar}>Cancelar</Text>
       </TouchableOpacity>
     </SafeAreaView>
@@ -91,7 +137,29 @@ const estilos = StyleSheet.create({
   titulo: { fontSize: 22, fontWeight: "700", color: cores.preto },
   campo: { backgroundColor: cores.branco, borderRadius: 12, padding: 14, fontSize: 15 },
   campoGrande: { minHeight: 100, textAlignVertical: "top" },
-  botao: { backgroundColor: cores.verde, borderRadius: 12, padding: 16, alignItems: "center" },
+  rotulo: { fontSize: 14, fontWeight: "600", color: cores.cinzaEscuro },
+  tipos: { flexDirection: "row", flexWrap: "wrap", gap: 8 },
+  botaoTipo: {
+    backgroundColor: cores.branco,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: cores.googleBorda,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+  },
+  botaoTipoSelecionado: { backgroundColor: cores.verde, borderColor: cores.verde },
+  textoDoTipo: { fontSize: 14, color: cores.preto },
+  textoDoTipoSelecionado: { color: cores.branco, fontWeight: "700" },
+  botao: {
+    backgroundColor: cores.verde,
+    borderRadius: 12,
+    padding: 16,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+  },
+  botaoDesabilitado: { opacity: 0.7 },
   textoDoBotao: { color: cores.branco, fontWeight: "700", fontSize: 16 },
   cancelar: { textAlign: "center", color: cores.cinzaEscuro, padding: 8 },
 });
