@@ -1,45 +1,47 @@
-import {
-  DarkTheme,
-  DefaultTheme,
-  ThemeProvider,
-} from "@react-navigation/native";
-import { Stack } from "expo-router";
+import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from "expo-router";
 import "react-native-reanimated";
 
+import { AuthProvider } from "@/context/auth-context";
+import { CidadeProvider } from "@/context/cidade-context";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 
 export const unstable_settings = {
-  //anchor: "(tabs)",
-  initialRouteName: "index",
+  anchor: "index",
+  //initialRouteName: "login",
 };
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
 
   return (
-    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="index" options={{ headerShown: false }} />
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen
-          name="modal"
-          options={{ presentation: "modal", title: "Modal" }}
-        />
-        <Stack.Screen name="mapa" options={{ title: "Mapa dos buracos" }} />
-        <Stack.Screen
-          name="criacao_reporte"
-          options={{ title: "Reportar buraco" }}
-        />
-        <Stack.Screen
-          name="detalhe"
-          options={{ title: "Detalhe do report" }}
-        />
-        <Stack.Screen name="perfil" options={{ title: "Perfil" }} />
-        <Stack.Screen
-          name="prefeitura"
-          options={{ title: "Painel da Prefeitura" }}
-        />
-      </Stack>
-    </ThemeProvider>
+    <AuthProvider>
+      <CidadeProvider>
+      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+        <Stack>
+          <Stack.Screen name="index" options={{ headerShown: false }} />
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="cadastro" options={{ title: "Cadastro" }} />
+          <Stack.Screen
+            name="esqueci-senha"
+            options={{ title: "Recuperar senha" }}
+          />
+          <Stack.Screen
+            name="verificar-email"
+            options={{ headerShown: false }}
+          />
+          {/* Nova tela de reporte */}
+          <Stack.Screen
+            name="novo-reporte"
+            options={{ title: "", headerBackTitle: "", headerShadowVisible: false }}
+          />
+          {/* Lista de reportes (Desafio 2). Cabeçalho sem título: a própria tela já mostra "Reportes". */}
+          <Stack.Screen
+            name="lista-de-reportes"
+            options={{ title: "", headerBackTitle: "", headerShadowVisible: false }}
+          />
+        </Stack>
+      </ThemeProvider>
+      </CidadeProvider>
+    </AuthProvider>
   );
 }
