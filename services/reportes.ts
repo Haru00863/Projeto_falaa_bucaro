@@ -1,4 +1,5 @@
 import { bancoDeDados } from "@/firebase-config";
+import { TipoOcorrencia } from "@/types/ocorrencia";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 
 // Dados que a tela precisa informar para criar um reporte.
@@ -10,6 +11,8 @@ export type DadosDoReporte = {
   descricao: string;
   latitude: number;
   longitude: number;
+  tipo: TipoOcorrencia; // buraco, calçada, iluminação ou outro
+  endereco: string | null; // null quando não foi possível descobrir o endereço
 };
 
 /**
@@ -26,6 +29,8 @@ export async function criarReporte(dados: DadosDoReporte): Promise<string> {
     // Descrição é opcional: se vier vazia, gravamos null em vez de "" (o
     // Firestore não aceita `undefined`, por isso não usamos `undefined` aqui).
     descricao: dados.descricao.trim() || null,
+    tipo: dados.tipo,
+    endereco: dados.endereco, // string ou null (nunca undefined, pelo mesmo motivo da descrição)
     status: "aberto", // todo reporte novo começa como "aberto"
     latitude: dados.latitude,
     longitude: dados.longitude,
